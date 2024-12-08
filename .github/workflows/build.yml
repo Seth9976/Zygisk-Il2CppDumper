@@ -20,7 +20,11 @@ jobs:
         chmod +x ./gradlew
         sed -i 's/moduleDescription = "/moduleDescription = "(${{ github.event.inputs.package_name }}) /g' module.gradle
         sed -i "s/com.game.packagename/${{ github.event.inputs.package_name }}/g" module/src/main/cpp/game.h
-        ./gradlew :module:assembleRelease
-        mkdir -p out/magisk_module_release/
-        cp module/build/outputs/apk/release/*.apk out/magisk_module_release/
-        echo
+        ./gradlew :module:assembleRelease --stacktrace
+    - run: |
+        echo "Checking output directory..."
+        ls -R module/build/outputs/apk/release/
+    - uses: actions/upload-artifact@v3
+      with:
+        name: zygisk-il2cppdumper
+        path: module/build/outputs/apk/release/
